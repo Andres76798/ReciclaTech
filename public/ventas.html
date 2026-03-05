@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ventas - ReciclaTech</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+if(localStorage.getItem("login") !== "true"){
+window.location.href="login.html";
+}
+</script>
+</head>
+
+<body>
+
+<header class="header">
+<div class="header-content">
+<img src="images/logo.png" class="logo">
+<h1>Registro de Ventas</h1>
+</div>
+</header>
+
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="inventario.html">Inventario</a>
+<a href="graficos.html">Estadísticas</a>
+</nav>
+
+<div class="contenedor">
+
+<div class="card">
+
+<h3>Nueva Venta</h3>
+
+<input id="material" placeholder="Material">
+<input id="cantidad" placeholder="Cantidad (kg)" oninput="calcular()">
+<input id="precio" placeholder="Precio por kg" oninput="calcular()">
+<input id="cliente" placeholder="Cliente">
+
+<h3>Total Venta</h3>
+<h2 id="totalVenta">$0</h2>
+
+<button onclick="guardarVenta()">Registrar Venta</button>
+
+</div>
+
+</div>
+
+<div class="inventario-container">
+
+<h2>Historial de Ventas</h2>
+
+<div class="tabla-card">
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Material</th>
+<th>Cantidad</th>
+<th>Precio</th>
+<th>Cliente</th>
+<th>Fecha</th>
+<th>Acciones</th>
+</tr>
+</thead>
+
+<tbody id="tablaVentas"></tbody>
+
+</table>
+
+</div>
+
+<button class="btn" onclick="descargarPDF()">Descargar Reporte PDF</button>
+
+</div>
+
+<script>
+
+function calcular(){
+
+const cantidad = document.getElementById("cantidad").value || 0;
+const precio = document.getElementById("precio").value || 0;
+
+const total = cantidad * precio;
+
+document.getElementById("totalVenta").innerText = "$" + total;
+
+}
+
+async function guardarVenta(){
+
+const data = {
+material: material.value,
+cantidad: cantidad.value,
+precio: precio.value,
+cliente: cliente.value
+};
+
+await fetch("/venta",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify(data)
+});
+
+alert("Venta registrada");
+
+material.value="";
+cantidad.value="";
+precio.value="";
+cliente.value="";
+totalVenta.innerText="$0";
+
+cargarVentas();
+
+}
+
+async function cargarVentas(){
+
+const res = await fetch("/ventas");
+const data = await res.json();
+
+const tabla = document.getElementById("tablaVentas");
+
+tabla.innerHTML="";
+
+data.forEach(v=>{
+
+tabla.innerHTML+=`
+
+<tr>
+
+<td>${v.id}</td>
+<td>${v.material}</td>
+<td>${v.cantidad} kg</td>
+<td>$${v.precio}</td>
+<td>${v.cliente}</td>
+<td>${v.fecha}</td>
+
+<td>
+
+<button onclick="editar(${v.id},'${v.material}',${v.cantidad},${v.precio},'${v.cliente}')">Editar</button>
+
+<button onclick="eliminar(${v.id})">Eliminar</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+async function eliminar(id){
+
+if(!confirm("Eliminar venta?")) return;
+
+await fetch("/venta/"+id,{
+method:"DELETE"
+});
+
+cargarVentas();
+
+}
+
+async function editar(id,material,cantidad,precio,cliente){
+
+const nuevoCliente = prompt("Cliente:",cliente);
+if(!nuevoCliente) return;
+
+await fetch("/venta/"+id,{
+method:"PUT",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+material,
+cantidad,
+precio,
+cliente:nuevoCliente
+})
+});
+
+cargarVentas();
+
+}
+
+function descargarPDF(){
+
+window.open("/reporte","_blank");
+
+}
+
+cargarVentas();
+
+</script>
+
+</body>
+</html>

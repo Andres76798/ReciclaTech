@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Inventario</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+if(localStorage.getItem("login") !== "true"){
+    window.location.href = "login.html";
+}
+</script>
+
+</head>
+<body>
+
+<header>
+<h1>Inventario de Materiales</h1>
+</header>
+
+<nav>
+<a href="index.html">Inicio</a>
+<a href="ventas.html">Ventas</a>
+</nav>
+
+<div class="contenedor">
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Material</th>
+<th>Peso</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="tabla"></tbody>
+</table>
+
+
+</div>
+
+<script>
+async function cargarInventario() {
+
+    const res = await fetch("/inventario");
+    const data = await res.json();
+
+    const tabla = document.getElementById("tabla");
+    tabla.innerHTML = "";
+
+    data.forEach(m => {
+        tabla.innerHTML += `
+        <tr>
+        <td>${m.id}</td>
+        <td>${m.nombre}</td>
+        <td>${m.peso} kg</td>
+        <td>
+            <button onclick="editar(${m.id}, '${m.nombre}', ${m.peso})">Editar</button>
+            <button onclick="eliminar(${m.id})">Eliminar</button>
+        </td>
+        </tr>`;
+    });
+}
+
+async function eliminar(id) {
+
+    if(!confirm("¿Eliminar material?")) return;
+
+    await fetch("/material/" + id, {
+        method: "DELETE"
+    });
+
+    cargarInventario();
+}
+
+async function editar(id, nombre, peso) {
+
+    const nuevoPeso = prompt("Nuevo peso:", peso);
+
+    if(!nuevoPeso) return;
+
+    await fetch("/material/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nombre: nombre,
+            peso: nuevoPeso
+        })
+    });
+
+    cargarInventario();
+}
+
+cargarInventario();
+</script>
+
+</body>
+</html>

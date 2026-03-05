@@ -1,0 +1,237 @@
+body{
+margin:0;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background:#eef2f5;
+}
+
+/* HEADER */
+
+.header{
+background:linear-gradient(90deg,#2e7d32,#1b5e20);
+padding:15px;
+color:white;
+}
+
+.header-content{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:15px;
+}
+
+.logo{
+width:90px;
+}
+
+/* NAV */
+
+nav{
+background:#1b5e20;
+padding:12px;
+text-align:center;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+nav a{
+color:white;
+margin:15px;
+text-decoration:none;
+font-weight:bold;
+transition:.3s;
+}
+
+nav a:hover{
+color:#a5d6a7;
+}
+
+/* PANEL */
+
+.panel-admin{
+text-align:center;
+margin-top:20px;
+}
+
+.panel-admin h2{
+color:#2e7d32;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+display:flex;
+justify-content:center;
+gap:25px;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+.stat-card{
+background:white;
+padding:20px;
+border-radius:12px;
+width:220px;
+text-align:center;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+animation:fadeIn 0.8s ease;
+}
+
+.stat-card h2{
+color:#2e7d32;
+}
+
+/* CONTENEDOR */
+
+.contenedor{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+padding:30px;
+gap:20px;
+}
+
+/* TARJETAS */
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+width:280px;
+text-align:center;
+transition:0.3s;
+animation:fadeInUp 0.6s ease;
+}
+
+.card:hover{
+transform:translateY(-6px);
+}
+
+.card img{
+width:70px;
+margin-bottom:10px;
+}
+
+/* INPUTS */
+
+input, select{
+width:90%;
+padding:10px;
+margin:6px;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+/* BOTONES */
+
+button{
+background:#2e7d32;
+color:white;
+border:none;
+padding:10px;
+width:95%;
+margin-top:10px;
+cursor:pointer;
+border-radius:6px;
+font-weight:bold;
+}
+
+button:hover{
+background:#1b5e20;
+}
+
+/* BOTON LINK */
+
+.btn{
+display:inline-block;
+background:#2e7d32;
+color:white;
+padding:10px 20px;
+text-decoration:none;
+border-radius:6px;
+font-weight:bold;
+}
+
+.btn:hover{
+background:#1b5e20;
+}
+
+/* VENTAS */
+
+.ventas-container{
+display:flex;
+flex-direction:column;
+align-items:center;
+margin-top:30px;
+}
+
+/* ANIMACIONES */
+
+@keyframes fadeIn{
+from{opacity:0}
+to{opacity:1}
+}
+
+@keyframes fadeInUp{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* INVENTARIO PROFESIONAL */
+
+.inventario-container{
+width:90%;
+margin:auto;
+margin-top:30px;
+text-align:center;
+}
+
+.tabla-card{
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-top:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+table th{
+background:#2e7d32;
+color:white;
+padding:12px;
+}
+
+table td{
+padding:12px;
+border-bottom:1px solid #eee;
+}
+
+table tr:hover{
+background:#f5f7fa;
+}
+
+.btn-editar{
+background:#42a5f5;
+margin-right:5px;
+}
+
+.btn-eliminar{
+background:#ef5350;
+}
+
+.btn-editar:hover{
+background:#1e88e5;
+}
+
+.btn-eliminar:hover{
+background:#c62828;
+}

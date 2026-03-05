@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Panel de Estadísticas - ReciclaTech</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+if(localStorage.getItem("login") !== "true"){
+    window.location.href = "login.html";
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header class="header">
+<div class="header-content">
+<img src="images/logo.png" class="logo">
+<h1>Panel Administrativo de Estadísticas</h1>
+</div>
+</header>
+
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="inventario.html">Inventario</a>
+<a href="ventas.html">Ventas</a>
+</nav>
+
+<div class="contenedor">
+
+<div class="dashboard">
+
+<div class="stat-card">
+<h3>Total reciclado</h3>
+<h2 id="totalReciclado">0 kg</h2>
+</div>
+
+<div class="stat-card">
+<h3>Material principal</h3>
+<h2 id="topMaterial">-</h2>
+</div>
+
+<div class="stat-card">
+<h3>Ventas registradas</h3>
+<h2 id="totalVentas">0</h2>
+</div>
+
+<div class="stat-card">
+<h3>Generar Reporte</h3>
+<button onclick="generarReporte()">Descargar PDF</button>
+</div>
+
+</div>
+
+<canvas id="grafico"></canvas>
+
+<div class="calc-card">
+<h2>Calculadora Inteligente de Venta</h2>
+
+<select id="materialNombre">
+<option value="">Seleccione material</option>
+<option>Plástico</option>
+<option>Papel</option>
+<option>Cartón</option>
+<option>Metales</option>
+<option>Vidrio</option>
+</select>
+
+<input id="pesoCalc" type="number" placeholder="Peso en kg">
+<input id="precioKg" type="number" placeholder="Precio por kg">
+
+<button onclick="calcularVenta()">Calcular venta</button>
+
+<h3 id="resultado"></h3>
+</div>
+
+</div>
+
+<script>
+async function cargarGrafico() {
+
+    const res = await fetch("/estadisticas");
+    const data = await res.json();
+
+    const resVentas = await fetch("/ventas");
+    const ventas = await resVentas.json();
+
+    document.getElementById("totalVentas").innerText = ventas.length;
+
+    const labels = [];
+    const valores = [];
+
+    let total = 0;
+    let max = 0;
+    let topMaterial = "";
+
+    data.forEach(item => {
+        labels.push(item.nombre);
+        valores.push(item.total);
+
+        total += item.total;
+
+        if (item.total > max) {
+            max = item.total;
+            topMaterial = item.nombre;
+        }
+    });
+
+    document.getElementById("totalReciclado").innerText = total + " kg";
+    document.getElementById("topMaterial").innerText = topMaterial;
+
+    const colores = [
+        "#2e7d32",
+        "#42a5f5",
+        "#ffa726",
+        "#ab47bc",
+        "#ef5350",
+        "#26c6da"
+    ];
+
+    new Chart(document.getElementById("grafico"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Material reciclado (kg)",
+                data: valores,
+                backgroundColor: colores,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: {
+                duration: 1800
+            },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function generarReporte() {
+window.open("/reporte","_blank");
+}
+
+function calcularVenta() {
+
+    const material = document.getElementById("materialNombre").value;
+    const peso = document.getElementById("pesoCalc").value;
+    const precio = document.getElementById("precioKg").value;
+
+    if (!material || !peso || !precio) {
+        alert("Completa todos los campos");
+        return;
+    }
+
+    const total = peso * precio;
+
+    document.getElementById("resultado").innerHTML =
+        "Venta estimada de " + material +
+        "<br><b style='color:#2e7d32;font-size:22px'>$ " + total + "</b>";
+}
+
+cargarGrafico();
+</script>
+
+</body>
+</html>

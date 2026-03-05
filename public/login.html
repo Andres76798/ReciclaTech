@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ReciclaTech - Acceso al Sistema</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.login-body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#2e7d32,#66bb6a);
+}
+
+.login-box{
+background:white;
+padding:40px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+width:350px;
+text-align:center;
+animation:fadeIn 0.8s ease;
+}
+
+.login-logo{
+width:120px;
+margin-bottom:10px;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(-20px);}
+to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body class="login-body">
+
+<div class="login-box">
+
+<img src="images/logo.png" class="login-logo">
+
+<h2>ReciclaTech</h2>
+<p>Sistema Inteligente de Reciclaje</p>
+
+<input id="user" placeholder="Usuario">
+<input id="pass" type="password" placeholder="Contraseña">
+
+<button onclick="login()">Ingresar</button>
+
+</div>
+
+<script>
+function login(){
+
+const u = document.getElementById("user").value;
+const p = document.getElementById("pass").value;
+
+if(u === "admin" && p === "reciclatech2026"){
+    localStorage.setItem("login", "true");
+    window.location.href = "index.html";
+}else{
+    alert("Credenciales incorrectas");
+}
+
+}
+</script>
+
+</body>
+</html>
