@@ -21,7 +21,10 @@ db.serialize(() => {
             fecha_ingreso TEXT,
             ubicacion TEXT
         )
-    `);
+    `, (err) => {
+        if (err) console.log("Tabla materiales ya existe o error:", err.message);
+        else console.log("Tabla materiales creada/verificada");
+    });
 
     db.run(`
         CREATE TABLE IF NOT EXISTS ventas (
@@ -32,10 +35,11 @@ db.serialize(() => {
             cliente TEXT,
             fecha TEXT
         )
-    `);
+    `, (err) => {
+        if (err) console.log("Tabla ventas ya existe o error:", err.message);
+        else console.log("Tabla ventas creada/verificada");
+    });
 
 });
-
-
 
 module.exports = db;
