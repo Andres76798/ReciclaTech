@@ -1,98 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Inventario</title>
-<link rel="stylesheet" href="style.css">
-
-<script>
-if(localStorage.getItem("login") !== "true"){
-    window.location.href = "login.html";
-}
-</script>
-
+    <title>Inventario Pro - ReciclaTech</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+    <header class="header">
+        <div class="header-content">
+            <img src="images/logo.png" class="logo">
+            <h1>Gestión de Inventario</h1>
+        </div>
+    </header>
 
-<header>
-<h1>Inventario de Materiales</h1>
-</header>
+    <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="ventas.html">Ventas</a>
+        <a href="graficos.html">Estadísticas</a>
+        <a href="#" class="logout" onclick="logout()">Cerrar sesión</a>
+    </nav>
 
-<nav>
-<a href="index.html">Inicio</a>
-<a href="ventas.html">Ventas</a>
-</nav>
+    <div class="contenedor">
+        <div class="tabla-card" style="width: 100%;">
+            <input type="text" id="buscador" placeholder="🔍 Buscar material..." onkeyup="filtrarTabla()" style="margin-bottom: 20px; width: 300px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Material</th>
+                        <th>Peso Actual</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla"></tbody>
+            </table>
+        </div>
+    </div>
 
-<div class="contenedor">
+    <script>
+        async function cargarInventario(){
+            const res = await fetch("/inventario");
+            const data = await res.json();
+            const tabla = document.getElementById("tabla");
+            tabla.innerHTML = "";
 
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Material</th>
-<th>Peso</th>
-<th>Acciones</th>
-</tr>
-</thead>
-<tbody id="tabla"></tbody>
-</table>
+            data.forEach(m => {
+                const stockClase = m.peso < 10 ? 'style="color:red; font-weight:bold;"' : 'style="color:green;"';
+                const stockTexto = m.peso < 10 ? '⚠️ Crítico' : '✅ Óptimo';
 
+                tabla.innerHTML += `
+                <tr>
+                    <td>${m.id}</td>
+                    <td>${m.nombre}</td>
+                    <td ${stockClase}>${m.peso} kg</td>
+                    <td>${stockTexto}</td>
+                    <td>
+                        <button class="btn-editar" onclick="editar(${m.id}, '${m.nombre}', ${m.peso})">Editar</button>
+                        <button class="btn-eliminar" onclick="eliminar(${m.id})">Eliminar</button>
+                    </td>
+                </tr>`;
+            });
+        }
 
-</div>
+        function filtrarTabla() {
+            let input = document.getElementById("buscador").value.toLowerCase();
+            let filas = document.getElementById("tabla").getElementsByTagName("tr");
+            for (let fila of filas) {
+                let texto = fila.getElementsByTagName("td")[1].textContent.toLowerCase();
+                fila.style.display = texto.includes(input) ? "" : "none";
+            }
+        }
 
-<script>
-async function cargarInventario() {
+        async function eliminar(id){
+            Swal.fire({
+                title: '¿Eliminar material?',
+                text: "Esta acción no se puede deshacer",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await fetch("/material/" + id, { method: "DELETE" });
+                    Swal.fire('Eliminado', 'El material ha sido borrado', 'success');
+                    cargarInventario();
+                }
+            });
+        }
 
-    const res = await fetch("/inventario");
-    const data = await res.json();
+        async function editar(id, nombre, peso){
+            const { value: nuevoPeso } = await Swal.fire({
+                title: `Editar peso: ${nombre}`,
+                input: 'number',
+                inputValue: peso,
+                showCancelButton: true
+            });
 
-    const tabla = document.getElementById("tabla");
-    tabla.innerHTML = "";
+            if (nuevoPeso) {
+                await fetch("/material/" + id, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nombre, peso: parseFloat(nuevoPeso) })
+                });
+                Swal.fire('Actualizado', 'Inventario modificado', 'success');
+                cargarInventario();
+            }
+        }
 
-    data.forEach(m => {
-        tabla.innerHTML += `
-        <tr>
-        <td>${m.id}</td>
-        <td>${m.nombre}</td>
-        <td>${m.peso} kg</td>
-        <td>
-            <button onclick="editar(${m.id}, '${m.nombre}', ${m.peso})">Editar</button>
-            <button onclick="eliminar(${m.id})">Eliminar</button>
-        </td>
-        </tr>`;
-    });
-}
-
-async function eliminar(id) {
-
-    if(!confirm("¿Eliminar material?")) return;
-
-    await fetch("/material/" + id, {
-        method: "DELETE"
-    });
-
-    cargarInventario();
-}
-
-async function editar(id, nombre, peso) {
-
-    const nuevoPeso = prompt("Nuevo peso:", peso);
-
-    if(!nuevoPeso) return;
-
-    await fetch("/material/" + id, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            nombre: nombre,
-            peso: nuevoPeso
-        })
-    });
-
-    cargarInventario();
-}
-
-cargarInventario();
-</script>
-
+        function logout(){ localStorage.clear(); window.location.href="login.html"; }
+        window.onload = cargarInventario;
+    </script>
 </body>
 </html>

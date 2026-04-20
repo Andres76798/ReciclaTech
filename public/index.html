@@ -1,142 +1,197 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<title>ReciclaTech - Panel Principal</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>ReciclaTech - Panel Principal</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2e7d32">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<script>
-if(localStorage.getItem("login") !== "true"){
-window.location.href = "login.html";
-}
-</script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        // SEGURIDAD: Bloqueo de acceso si no hay login
+        if(localStorage.getItem("login") !== "true"){
+            window.location.href = "login.html";
+        }
+
+        // REGISTRO DE SERVICE WORKER PARA PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA: Service Worker Activo', reg.scope))
+                    .catch(err => console.log('PWA: Error al registrar', err));
+            });
+        }
+    </script>
 </head>
 
 <body>
 
 <header class="header">
-<div class="header-content">
-<img src="images/logo.png" class="logo">
-<div>
-<h1>ReciclaTech</h1>
-<p>Sistema Inteligente para la Gestión, Clasificación y Control de Inventarios de Materiales Reciclables</p>
-</div>
-</div>
+    <div class="header-content">
+        <img src="images/logo.png" class="logo" alt="Logo ReciclaTech">
+        <div>
+            <h1>ReciclaTech</h1>
+            <p>Sistema Inteligente de Gestión y Control de Inventarios</p>
+        </div>
+    </div>
 </header>
 
 <nav>
-<a href="index.html">Dashboard</a>
-<a href="inventario.html">Inventario</a>
-<a href="ventas.html">Ventas</a>
-<a href="graficos.html">Estadísticas</a>
+    <a href="historial_ventas.html">Historial Ventas</a>
+    <a href="index.html">Dashboard</a>
+    <a href="inventario.html">Inventario</a>
+    <a href="ventas.html">Ventas</a>
+    <a href="graficos.html">Estadísticas</a>
+    <a href="#" class="logout" onclick="logout()">Cerrar sesión</a>
 </nav>
 
 <section class="panel-admin">
-<h2>Panel Administrativo</h2>
-<p>Control general del sistema</p>
+    <h2>Panel Administrativo</h2>
+    <p>Control general del sistema</p>
 </section>
 
-<!-- DASHBOARD -->
 <div class="dashboard">
+    <div class="stat-card" style="border-bottom: 5px solid #2e7d32;">
+        <h3>Total Material Registrado</h3>
+        <h2 id="totalMaterial">0 kg</h2>
+    </div>
 
-<div class="stat-card">
-<h3>Total Material Registrado</h3>
-<h2 id="totalMaterial">0 kg</h2>
-</div>
+    <div class="stat-card" style="border-bottom: 5px solid #1976d2;">
+        <h3>Ganancias Totales</h3>
+        <h2 id="gananciasTotales">$ 0</h2>
+    </div>
 
-<div class="stat-card">
-<h3>Materiales Registrados</h3>
-<h2 id="totalTipos">0</h2>
-</div>
+    <div class="stat-card" style="border-bottom: 5px solid #ffa000;">
+        <h3>Tipos de Materiales</h3>
+        <h2 id="totalTipos">0</h2>
+    </div>
 
-<div class="stat-card">
-<h3>Sistema</h3>
-<h2>Activo</h2>
-</div>
-
+    <div class="stat-card" style="border-bottom: 5px solid #455a64;">
+        <h3>Estado del Sistema</h3>
+        <h2 id="statusEnv" style="color: #2e7d32;">● Activo</h2>
+    </div>
 </div>
 
 <div class="contenedor">
+    <div class="card">
+        <img src="images/reciclaje.png" alt="Registro">
+        <h2>Registrar Material</h2>
 
-<div class="card">
-<img src="images/reciclaje.png">
-<h2>Registrar Material</h2>
+        <select id="nombre">
+            <option value="">Seleccione material</option>
+            <option>Plástico</option>
+            <option>Papel</option>
+            <option>Cartón</option>
+            <option>Metales</option>
+            <option>Vidrio</option>
+        </select>
 
-<select id="nombre">
-<option value="">Seleccione material</option>
-<option>Plástico</option>
-<option>Papel</option>
-<option>Cartón</option>
-<option>Metales</option>
-<option>Vidrio</option>
-</select>
+        <input type="number" id="peso" placeholder="Peso en kg">
+        <button onclick="guardar()">Guardar en Inventario</button>
+    </div>
 
-<input type="number" id="peso" placeholder="Peso en kg">
+    <div class="card menu-card">
+        <img src="images/inventario.png" alt="Inventario">
+        <h3>Inventario</h3>
+        <p>Gestión y alertas de stock</p>
+        <a class="btn" href="inventario.html">Abrir</a>
+    </div>
 
-<button onclick="guardar()">Guardar Material</button>
-</div>
+    <div class="card menu-card">
+        <img src="images/ventas.png" alt="Ventas">
+        <h3>Ventas</h3>
+        <p>Registro y facturación</p>
+        <a class="btn" href="ventas.html">Abrir</a>
+    </div>
 
-<div class="card menu-card">
-<img src="images/inventario.png">
-<h3>Inventario</h3>
-<p>Gestión de materiales reciclables</p>
-<a class="btn" href="inventario.html">Abrir</a>
-</div>
-
-<div class="card menu-card">
-<img src="images/ventas.png">
-<h3>Ventas</h3>
-<p>Registro de ventas de reciclaje</p>
-<a class="btn" href="ventas.html">Abrir</a>
-</div>
-
-<div class="card menu-card">
-<img src="images/plastico.png">
-<h3>Estadísticas</h3>
-<p>Análisis del sistema</p>
-<a class="btn" href="graficos.html">Abrir</a>
-</div>
-
+    <div class="card menu-card">
+        <img src="images/plastico.png" alt="Estadísticas">
+        <h3>Estadísticas</h3>
+        <p>Análisis de rendimiento</p>
+        <a class="btn" href="graficos.html">Abrir</a>
+    </div>
 </div>
 
 <script>
+    async function cargarDashboard(){
+        try {
+            // 1. Obtener total de KG
+            const resStock = await fetch("/total-stock");
+            const dataStock = await resStock.json();
+            document.getElementById("totalMaterial").innerText = (dataStock.totalKg || 0) + " kg";
 
-async function cargarDashboard(){
-const res = await fetch("/estadisticas");
-const data = await res.json();
+            // 2. Obtener inventario y Alerta Stock Crítico
+            const resInv = await fetch("/inventario");
+            const dataInv = await resInv.json();
+            document.getElementById("totalTipos").innerText = dataInv.length;
 
-let total = 0;
-data.forEach(item=>{
-total += item.total;
-});
+            const criticos = dataInv.filter(m => m.peso < 5);
+            if(criticos.length > 0) {
+                Swal.fire({
+                    title: '¡Stock Bajo!',
+                    text: `Hay ${criticos.length} materiales con menos de 5kg`,
+                    icon: 'warning',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true
+                });
+            }
 
-document.getElementById("totalMaterial").innerText = total + " kg";
-document.getElementById("totalTipos").innerText = data.length;
-}
+            // 3. Ganancias
+            const resFin = await fetch("/resumen-financiero");
+            const dataFin = await resFin.json();
+            const ganancias = dataFin.totalGanancias ? dataFin.totalGanancias.toLocaleString() : "0";
+            document.getElementById("gananciasTotales").innerText = "$ " + ganancias;
 
-async function guardar() {
+        } catch (error) {
+            console.error("Error cargando dashboard:", error);
+            const status = document.getElementById("statusEnv");
+            status.innerText = "● Error de Conexión";
+            status.style.color = "red";
+        }
+    }
 
-const nombre = document.getElementById("nombre").value;
-const peso = document.getElementById("peso").value;
+    async function guardar() {
+        const nombre = document.getElementById("nombre").value;
+        const peso = document.getElementById("peso").value;
 
-if(!nombre || !peso){
-alert("Completa todos los campos");
-return;
-}
+        if(!nombre || !peso) {
+            Swal.fire({ icon: 'error', title: 'Campos incompletos', text: 'Por favor, llena todos los campos.' });
+            return;
+        }
 
-await fetch("/material", {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ nombre, peso })
-});
+        try {
+            const res = await fetch("/material", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nombre, peso: parseFloat(peso) })
+            });
 
-alert("Material guardado correctamente");
-document.getElementById("peso").value = "";
+            if(res.ok) {
+                Swal.fire({ icon: 'success', title: '¡Guardado!', timer: 1500, showConfirmButton: false });
+                document.getElementById("peso").value = "";
+                document.getElementById("nombre").selectedIndex = 0;
+                cargarDashboard();
+            }
+        } catch (error) {
+            Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+        }
+    }
 
-cargarDashboard();
-}
+    function logout(){
+        localStorage.clear(); // Limpia toda la sesión
+        window.location.href = "login.html";
+    }
 
-cargarDashboard();
-
+    window.onload = cargarDashboard;
 </script>
 
 </body>

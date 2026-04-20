@@ -235,3 +235,52 @@ background:#1e88e5;
 .btn-eliminar:hover{
 background:#c62828;
 }
+
+.logout{
+background:#ef5350;
+padding:8px 14px;
+border-radius:6px;
+}
+
+.logout:hover{
+background:#c62828;
+color:white;
+}
+
+/* AJUSTES PARA CELULAR (Responsive) */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .dashboard {
+        grid-template-columns: 1fr 1fr; /* 2 columnas en móvil */
+        padding: 10px;
+    }
+
+    .stat-card h2 {
+        font-size: 1.2rem;
+    }
+
+    .contenedor {
+        padding: 10px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+        width: 100%; /* Tarjetas a pantalla completa */
+    }
+
+    table {
+        display: block;
+        overflow-x: auto; /* Para que las tablas se puedan deslizar */
+    }
+}

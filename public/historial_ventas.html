@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Historial de Ventas - ReciclaTech</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <img src="images/logo.png" class="logo">
+            <h1>Historial de Ventas</h1>
+        </div>
+    </header>
+
+    <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="inventario.html">Inventario</a>
+        <a href="ventas.html">Nueva Venta</a>
+        <a href="#" class="logout" onclick="logout()">Cerrar sesión</a>
+    </nav>
+
+    <div class="contenedor">
+        <div class="tabla-card" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <input type="text" id="buscador" placeholder="🔍 Buscar por cliente o material..." onkeyup="filtrarVentas()" style="width: 300px;">
+                <button onclick="window.location.href='/reporte'" style="background: #2e7d32; color: white; padding: 10px;">Descargar Reporte PDF</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Material</th>
+                        <th>Cantidad</th>
+                        <th>Precio (kg)</th>
+                        <th>Total</th>
+                        <th>Cliente</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaVentas"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function cargarVentas() {
+            const res = await fetch("/ventas");
+            const ventas = await res.json();
+            const tabla = document.getElementById("tablaVentas");
+            tabla.innerHTML = "";
+
+            ventas.forEach(v => {
+                const total = v.cantidad * v.precio;
+                tabla.innerHTML += `
+                <tr>
+                    <td>${v.fecha}</td>
+                    <td>${v.material}</td>
+                    <td>${v.cantidad} kg</td>
+                    <td>$${v.precio}</td>
+                    <td><strong>$${total.toLocaleString()}</strong></td>
+                    <td>${v.cliente}</td>
+                    <td>
+                        <button class="btn-editar" onclick="editarVenta(${v.id}, '${v.material}', ${v.cantidad}, ${v.precio}, '${v.cliente}')">Editar</button>
+                        <button class="btn-eliminar" onclick="eliminarVenta(${v.id})">Eliminar</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        async function eliminarVenta(id) {
+            const result = await Swal.fire({
+                title: '¿Eliminar registro?',
+                text: "Esto no devolverá el stock al inventario automáticamente.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar'
+            });
+
+            if (result.isConfirmed) {
+                await fetch(`/venta/${id}`, { method: 'DELETE' });
+                Swal.fire('Eliminado', 'La venta ha sido borrada.', 'success');
+                cargarVentas();
+            }
+        }
+
+        async function editarVenta(id, material, cantidad, precio, cliente) {
+            const { value: formValues } = await Swal.fire({
+                title: 'Editar Venta',
+                html:
+                    `<label>Cantidad (kg)</label><input id="swal-input1" class="swal2-input" value="${cantidad}">` +
+                    `<label>Precio ($)</label><input id="swal-input2" class="swal2-input" value="${precio}">` +
+                    `<label>Cliente</label><input id="swal-input3" class="swal2-input" value="${cliente}">`,
+                focusConfirm: false,
+                preConfirm: () => {
+                    return {
+                        cantidad: document.getElementById('swal-input1').value,
+                        precio: document.getElementById('swal-input2').value,
+                        cliente: document.getElementById('swal-input3').value
+                    }
+                }
+            });
+
+            if (formValues) {
+                await fetch(`/venta/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        material: material,
+                        cantidad: parseFloat(formValues.cantidad),
+                        precio: parseFloat(formValues.precio),
+                        cliente: formValues.cliente
+                    })
+                });
+                Swal.fire('Actualizado', 'Venta modificada con éxito', 'success');
+                cargarVentas();
+            }
+        }
+
+        function filtrarVentas() {
+            let input = document.getElementById("buscador").value.toLowerCase();
+            let filas = document.getElementById("tablaVentas").getElementsByTagName("tr");
+            for (let fila of filas) {
+                let texto = fila.textContent.toLowerCase();
+                fila.style.display = texto.includes(input) ? "" : "none";
+            }
+        }
+
+        function logout() { localStorage.clear(); window.location.href="login.html"; }
+        window.onload = cargarVentas;
+    </script>
+</body>
+</html>

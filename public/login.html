@@ -52,19 +52,30 @@ to{opacity:1; transform:translateY(0);}
 </div>
 
 <script>
+
+if(localStorage.getItem("login") === "true"){
+window.location.href="index.html";
+}
+
 function login(){
 
 const u = document.getElementById("user").value;
 const p = document.getElementById("pass").value;
 
 if(u === "admin" && p === "reciclatech2026"){
-    localStorage.setItem("login", "true");
-    window.location.href = "index.html";
+
+localStorage.setItem("login","true");
+
+window.location.href="index.html";
+
 }else{
-    alert("Credenciales incorrectas");
+
+alert("Credenciales incorrectas");
+
 }
 
 }
+
 </script>
 
 </body>

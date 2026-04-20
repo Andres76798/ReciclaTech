@@ -22,9 +22,10 @@ if(localStorage.getItem("login") !== "true"){
 </header>
 
 <nav>
-<a href="index.html">Dashboard</a>
-<a href="inventario.html">Inventario</a>
-<a href="ventas.html">Ventas</a>
+    <a href="index.html">Dashboard</a>
+    <a href="inventario.html">Inventario</a>
+    <a href="ventas.html">Ventas</a>
+    <a href="#" class="logout" onclick="logout()">Cerrar sesión</a>
 </nav>
 
 <div class="contenedor">
@@ -172,6 +173,12 @@ function calcularVenta() {
 }
 
 cargarGrafico();
+
+function logout(){
+localStorage.removeItem("login");
+window.location.href="login.html";
+}
+
 </script>
 
 </body>
